@@ -1,0 +1,2 @@
+# djangoMini
+Django minimum system
