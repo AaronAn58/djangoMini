@@ -1,18 +1,20 @@
 from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 
-from .forms import CustomUserCreationForm
+from .forms import RegistrationForm
 
 
 def register(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # 自动登录用户
-            return redirect('/')  # 根据需要重定向到其他页面
+            login(request, user)
+            return redirect('users:index')  # Redirect to the home page or another desired page
     else:
-        form = CustomUserCreationForm()
+        form = RegistrationForm()
+    # return render(request, 'registration/register.html', {'form': form})
     return render(request, 'register/register.html', {'form': form})
 
 
@@ -26,3 +28,16 @@ def logout(request):
 
 def password_change(request):
     return render(request, 'login/password_change_form.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('/')  # Redirect to the desired URL after successful login
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login/login.html', {'form': form})

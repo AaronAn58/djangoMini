@@ -11,8 +11,15 @@ from .models import Video
 
 
 def video_list(request):
+    if request.method == 'POST':
+        form = VideoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('video_list')
+    else:
+        form = VideoForm()
     videos = Video.objects.all()
-    return render(request, 'video_list.html', {'videos': videos})
+    return render(request, 'video_list.html', {'videos': videos, 'form': form})
 
 
 def upload_video(request):
@@ -23,13 +30,15 @@ def upload_video(request):
             return redirect('video_list')
     else:
         form = VideoForm()
-    return render(request, 'upload_video.html', {'form': form})
+    return render(request, 'video_list.html', {'form': form})
 
 
 def analyze_video(request):
     params = request.GET
-    model_pt = params.get('model')
+    # model_pt = params.get('model')
+    model_pt = "best.pt"
     video_name = params.get('video')
+    video_name = video_name.split('/')[-1]
     video_analysis_mul_process(model_pt, video_name)
     videos = Video.objects.all()
     return render(request, 'video_list.html', {'videos': videos})
@@ -46,8 +55,8 @@ def video_analysis_mul_process(model_pt, video_name):
 def video_analysis(lock, model_pt, video_name):
     lock.acquire()
     base_dir = Path(__file__).resolve().parent
-    model_name = str(base_dir) + "/config/" + model_pt
-    video = str(base_dir) + "/config/videos/" + video_name
+    model_name = str(base_dir) + "\\config\\" + model_pt
+    video = str(base_dir) + "\\config\\videos\\" + video_name
     model = YOLO(model_name)
     cap = cv2.VideoCapture(video)
     while True:
@@ -56,5 +65,9 @@ def video_analysis(lock, model_pt, video_name):
             cv2.waitKey(0)
             break
         im2 = cv2.resize(im2, (0, 0), fx=0.5, fy=0.5)
-        results = model.predict(source=im2, save=False, save_txt=False, show=True)  # save predictions as labels
+        model.predict(source=im2, save=False, save_txt=False, show=True)  # save predictions as labels
     lock.release()
+
+
+def upload_report(video_name, report):
+    pass

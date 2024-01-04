@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -11,12 +12,56 @@
             font-family: 'Arial', sans-serif;
             background-color: #f8f8f8;
             color: #333;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .mobi-text-center {
+            text-align: center;
+        }
+
+        .upload-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .custom-file-upload,
+        .upload-button {
+            display: inline-block;
+            padding: 12px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .custom-file-upload {
+            background-color: #007bff;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+        }
+
+        .upload-button {
+            background-color: #007bff;
+        }
+
+        .upload-button:hover {
+            background-color: #0056b3;
         }
 
         .video-list-table {
@@ -25,7 +70,8 @@
             margin-top: 20px;
         }
 
-        .video-list-table th, .video-list-table td {
+        .video-list-table th,
+        .video-list-table td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
@@ -44,58 +90,77 @@
         .video-list-table td a:hover {
             text-decoration: underline;
         }
-
-        .upload-form {
-            margin-top: 20px;
-        }
-
-        .upload-form label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .upload-form input[type="file"] {
-            display: none;
-        }
-
-        .upload-form .custom-file-upload {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 15px;
-            cursor: pointer;
-            display: inline-block;
-        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h2 class="mobi-text-center">视频列表</h2>
-        <table class="video-list-table mobi-table mobi-table-bordered">
-            <thead>
-                <tr>
-                    <th>编号</th>
-                    <th>视频</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for video in videos %}
-                    <tr>
-                        <td>{{ video.title }}</td>
-                        <td>{{ video.file.url }}</td>
-                        <td><a href="{{ video.file.url }}" target="_blank">Watch Video</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
-        <form method="post" enctype="multipart/form-data" class="upload-form">
-            {% csrf_token %}
-            <label for="video_file">选择要上传的视频:</label>
-            <input type="file" name="video_file" id="video_file" accept="video/*" required>
-            <label class="custom-file-upload" for="video_file">选择文件</label>
-            <button type="submit">上传</button>
-        </form>
-    </div>
+<body>
+<div class="container">
+    <h2 class="mobi-text-center">视频列表</h2>
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_title">视频标题:</label>
+            {{ form.title }}
+            <label for="id_file">选择要上传的视频:</label>
+            <div class="custom-file-upload">
+                {{ form.file }}
+            </div>
+            <button type="submit" class="upload-button">上传</button>
+        </div>
+    </form>
+
+    <table class="video-list-table mobi-table mobi-table-bordered">
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>视频</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for video in videos %}
+            <tr>
+                <td>{{ video.title }}</td>
+                <td>{{ video.file.url }}</td>
+                <td>
+                    <button type="button" class="analyze-button" onclick="analyzeVideo('{{ video.file.url }}')">视频分析</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    // Function to handle video analysis
+    function analyzeVideo(videoUrl) {
+        // You may use JavaScript to send an AJAX request to the analyze_video endpoint
+        // Example using Fetch API
+        const urlWithParams = `{% url 'analyze_video' %}?video=${encodeURIComponent(videoUrl)}`;
+        fetch(urlWithParams, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            // You can include additional data in the request body if needed
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data as needed
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+</script>
 </body>
+
 </html>
