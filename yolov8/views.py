@@ -1,12 +1,13 @@
 import multiprocessing
+from pathlib import Path
 
+import cv2
 import thread6
 from django.shortcuts import render, redirect
 from ultralytics import YOLO
 
 from .forms import VideoForm
 from .models import Video
-import cv2
 
 
 def video_list(request):
@@ -26,24 +27,34 @@ def upload_video(request):
 
 
 def analyze_video(request):
-
+    params = request.GET
+    model_pt = params.get('model')
+    video_name = params.get('video')
+    video_analysis_mul_process(model_pt, video_name)
+    videos = Video.objects.all()
+    return render(request, 'video_list.html', {'videos': videos})
 
 
 @thread6.threaded(False)
-def video_analysis_mul_process():
+def video_analysis_mul_process(model_pt, video_name):
     lock = multiprocessing.Semaphore(2)
     p = multiprocessing.Process(target=video_analysis,
-                                args=lock)
+                                args=(lock, model_pt, video_name))
     p.run()
 
 
-def video_analysis():
-    model = YOLO("best.pt")
-    cap = cv2.VideoCapture("videos/0.mp4")
+def video_analysis(lock, model_pt, video_name):
+    lock.acquire()
+    base_dir = Path(__file__).resolve().parent
+    model_name = str(base_dir) + "/config/" + model_pt
+    video = str(base_dir) + "/config/videos/" + video_name
+    model = YOLO(model_name)
+    cap = cv2.VideoCapture(video)
     while True:
         ret, im2 = cap.read()
-        if ret == False:
+        if not ret:
             cv2.waitKey(0)
             break
         im2 = cv2.resize(im2, (0, 0), fx=0.5, fy=0.5)
         results = model.predict(source=im2, save=False, save_txt=False, show=True)  # save predictions as labels
+    lock.release()

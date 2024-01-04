@@ -1,3 +1,4 @@
 django~=5.0.1
-ultralytics
-thread6
+ultralytics~=8.0.234
+thread6~=0.2.0
+opencv-python~=4.9.0.80

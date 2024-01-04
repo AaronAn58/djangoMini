@@ -1,6 +1,101 @@
-<h2>Video List</h2>
-<ul>
-  {% for video in videos %}
-    <li>{{ video.title }} - <a href="{{ video.file.url }}" target="_blank">Watch Video</a></li>
-  {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>视频列表</title>
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .video-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .video-list-table th, .video-list-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .video-list-table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .video-list-table td a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .video-list-table td a:hover {
+            text-decoration: underline;
+        }
+
+        .upload-form {
+            margin-top: 20px;
+        }
+
+        .upload-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .upload-form input[type="file"] {
+            display: none;
+        }
+
+        .upload-form .custom-file-upload {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mobi-text-center">视频列表</h2>
+        <table class="video-list-table mobi-table mobi-table-bordered">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>视频</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for video in videos %}
+                    <tr>
+                        <td>{{ video.title }}</td>
+                        <td>{{ video.file.url }}</td>
+                        <td><a href="{{ video.file.url }}" target="_blank">Watch Video</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            <label for="video_file">选择要上传的视频:</label>
+            <input type="file" name="video_file" id="video_file" accept="video/*" required>
+            <label class="custom-file-upload" for="video_file">选择文件</label>
+            <button type="submit">上传</button>
+        </form>
+    </div>
+</body>
+</html>
