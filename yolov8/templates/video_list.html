@@ -124,6 +124,7 @@
                 <td>{{ video.file.url }}</td>
                 <td>
                     <button type="button" class="analyze-button" onclick="analyzeVideo('{{ video.file.url }}')">视频分析</button>
+                    <button type="button" class="delete-button" onclick="deleteVideo('{{ video.id }}')">删除</button>
                 </td>
             </tr>
         {% endfor %}
@@ -137,7 +138,7 @@
     function analyzeVideo(videoUrl) {
         // You may use JavaScript to send an AJAX request to the analyze_video endpoint
         // Example using Fetch API
-        const urlWithParams = `{% url 'analyze_video' %}?video=${encodeURIComponent(videoUrl)}`;
+        const urlWithParams = `{% url 'yolov8:analyze_video' %}?video=${encodeURIComponent(videoUrl)}`;
         fetch(urlWithParams, {
             method: 'GET',
             headers: {
@@ -159,6 +160,38 @@
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
+    }
+
+    // Function to handle video deletion
+    function deleteVideo(videoId) {
+        // Confirm deletion
+        if (confirm("Are you sure you want to delete this video?")) {
+            // You may use JavaScript to send an AJAX request to the delete_video endpoint
+            // Example using Fetch API
+            const urlWithParams = `{% url 'yolov8:delete_video' video_id=0 %}`.replace('0', videoId);
+            fetch(urlWithParams, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the response data as needed
+                    console.log(data);
+                    // Reload the page or update the video list dynamically
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
     }
 </script>
 </body>

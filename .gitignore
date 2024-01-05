@@ -162,3 +162,6 @@ cython_debug/
 
 # vscode
 .history/
+
+runs/
+yolov8/config/videos

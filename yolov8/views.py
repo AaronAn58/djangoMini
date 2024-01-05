@@ -1,13 +1,18 @@
 import multiprocessing
+import os
 from pathlib import Path
 
 import cv2
 import thread6
-from django.shortcuts import render, redirect
+from PIL import Image
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from ultralytics import YOLO
 
 from .forms import VideoForm
 from .models import Video
+
+base_dir = Path(__file__).resolve().parent
 
 
 def video_list(request):
@@ -15,7 +20,7 @@ def video_list(request):
         form = VideoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('video_list')
+            return redirect('yolov8:video_list')
     else:
         form = VideoForm()
     videos = Video.objects.all()
@@ -27,7 +32,7 @@ def upload_video(request):
         form = VideoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('video_list')
+            return redirect('yolov8:video_list')
     else:
         form = VideoForm()
     return render(request, 'video_list.html', {'form': form})
@@ -54,20 +59,41 @@ def video_analysis_mul_process(model_pt, video_name):
 
 def video_analysis(lock, model_pt, video_name):
     lock.acquire()
-    base_dir = Path(__file__).resolve().parent
     model_name = str(base_dir) + "\\config\\" + model_pt
     video = str(base_dir) + "\\config\\videos\\" + video_name
     model = YOLO(model_name)
     cap = cv2.VideoCapture(video)
+    results = None
     while True:
         ret, im2 = cap.read()
         if not ret:
-            cv2.waitKey(0)
+            # cv2.waitKey(0)
             break
         im2 = cv2.resize(im2, (0, 0), fx=0.5, fy=0.5)
-        model.predict(source=im2, save=False, save_txt=False, show=True)  # save predictions as labels
+        results = model.predict(source=im2, save=True, save_txt=True, show=True, save_crop=True, )  # save predictions as labelsre
+    results.plot()
+    # model.export(format="onnx")
     lock.release()
 
 
 def upload_report(video_name, report):
     pass
+
+
+def delete_video(request, video_id):
+    if request.method == 'POST':
+        video = get_object_or_404(Video, pk=video_id)
+        video_file = str(base_dir) + "\\config\\" + str(video.file.name)
+        delete_file(video_file)
+        video.delete()
+        return JsonResponse({'message': 'Video deleted successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+
+def delete_file(file_path):
+    try:
+        os.remove(file_path)
+        print(f"File '{file_path}' deleted successfully.")
+    except OSError as e:
+        print(f"Error deleting file '{file_path}': {e}")
