@@ -120,11 +120,21 @@
         <tbody>
         {% for video in videos %}
             <tr>
-                <td>{{ video.title }}</td>
+                <td>{{ video.id }}</td>
                 <td>{{ video.file.url }}</td>
                 <td>
-                    <button type="button" class="analyze-button" onclick="analyzeVideo('{{ video.file.url }}')">视频分析</button>
+                    <button type="button" class="analyze-button"
+                            onclick="analyzeVideo('{{ video.file.url }}', '{{ video.id }}')">视频分析
+                    </button>
                     <button type="button" class="delete-button" onclick="deleteVideo('{{ video.id }}')">删除</button>
+                    <button type="button" class="report-button" id="reportButton{{ video.id }}" style="display: none"
+                            onclick="showReport('{{ video.id }}')">查看报告
+                    </button>
+                    {#                    {% if video.report %}#}
+                    {#                        <button type="button" class="report-button" id="reportButton{{ video.id }}"#}
+                    {#                                style="display: none" onclick="showReport('{{ video.id }}')">查看报告#}
+                    {#                        </button>#}
+                    {#                    {% endif %}#}
                 </td>
             </tr>
         {% endfor %}
@@ -135,10 +145,10 @@
 
 <script>
     // Function to handle video analysis
-    function analyzeVideo(videoUrl) {
+    function analyzeVideo(videoUrl, videoId) {
         // You may use JavaScript to send an AJAX request to the analyze_video endpoint
         // Example using Fetch API
-        const urlWithParams = `{% url 'yolov8:analyze_video' %}?video=${encodeURIComponent(videoUrl)}`;
+        const urlWithParams = `{% url 'yolov8:analyze_video' %}?video=${encodeURIComponent(videoUrl)}&id=${encodeURIComponent(videoId)}`;
         fetch(urlWithParams, {
             method: 'GET',
             headers: {
@@ -156,6 +166,38 @@
             .then(data => {
                 // Handle the response data as needed
                 console.log(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    // Function to check if report exists
+    function checkReport(videoId) {
+        // You may use JavaScript to send an AJAX request to the check_report endpoint
+        // Example using Fetch API
+        const urlWithParams = `{% url 'yolov8:check_report' video_id=0 %}`.replace('0', videoId);
+        fetch(urlWithParams, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data as needed
+                console.log(data);
+                // If report exists, show report button
+                if (data.has_report) {
+                    // Show the report button
+                    document.getElementById('reportButton' + videoId).style.display = 'block';
+                }
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
@@ -193,7 +235,74 @@
                 });
         }
     }
+
+    function showReport(videoId) {
+        // You may use JavaScript to send an AJAX request to the show_report endpoint
+        // Example using Fetch API
+        const urlWithParams = `{% url 'yolov8:show_report' video_id=0 %}`.replace('0', videoId);
+        fetch(urlWithParams, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data as needed
+                console.log(data);
+                // Show the report modal
+                showModal(data.report);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    // Function to show report modal
+    function showModal(report) {
+        // You can use JavaScript to show a modal with the report data
+        // Example using Bootstrap modal
+        const modal = document.getElementById('reportModal');
+        const reportBody = modal.querySelector('.modal-body');
+        reportBody.innerHTML = '';  // Clear previous report data
+        report.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = item;
+            reportBody.appendChild(listItem);
+        });
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    // Call checkReport function for each video
+    {% for video in videos %}
+        checkReport('{{ video.id }}');
+    {% endfor %}
 </script>
+
+{#<!-- Report Modal -->#}
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">报告</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Report content will be displayed here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
