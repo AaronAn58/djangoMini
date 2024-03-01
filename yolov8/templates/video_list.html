@@ -130,16 +130,37 @@
                     <button type="button" class="report-button" id="reportButton{{ video.id }}" style="display: none"
                             onclick="showReport('{{ video.id }}')">查看报告
                     </button>
-                    {#                    {% if video.report %}#}
-                    {#                        <button type="button" class="report-button" id="reportButton{{ video.id }}"#}
-                    {#                                style="display: none" onclick="showReport('{{ video.id }}')">查看报告#}
-                    {#                        </button>#}
-                    {#                    {% endif %}#}
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+     style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">报告</h5>
+                {#                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>报告内容</th>
+                    </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeButton" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -236,32 +257,63 @@
         }
     }
 
+
     function showReport(videoId) {
-        // You may use JavaScript to send an AJAX request to the show_report endpoint
-        // Example using Fetch API
-        const urlWithParams = `{% url 'yolov8:show_report' video_id=0 %}`.replace('0', videoId);
-        fetch(urlWithParams, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+
+        // 获取查看报告按钮
+        const viewReportButton = document.getElementById('reportButton' + videoId);
+
+        // 获取报告模态框
+        const reportModal = document.getElementById('reportModal');
+
+        // 发送 AJAX 请求以获取报告数据
+        fetch(`/videos/show_report/${videoId}`)
+            .then(response => response.json())
             .then(data => {
-                // Handle the response data as needed
-                console.log(data);
-                // Show the report modal
-                showModal(data.report);
+                // 清除表格中的旧数据
+                document.getElementById('reportTableBody').innerHTML = '';
+
+                // 创建表头行
+                const headerRow = document.createElement('tr');
+                const headerKeyCell = document.createElement('th');
+                const headerValueCell = document.createElement('th');
+                headerKeyCell.textContent = 'Key';
+                headerValueCell.textContent = 'Value';
+                headerRow.appendChild(headerKeyCell);
+                headerRow.appendChild(headerValueCell);
+                document.getElementById('reportTableBody').appendChild(headerRow);
+
+
+                // 将报告数据填充到表格中
+                for (const [key, value] of Object.entries(data.report)) {
+                    const row = document.createElement('tr');
+                    const keyCell = document.createElement('td');
+                    const valueCell = document.createElement('td');
+                    keyCell.textContent = key;
+                    valueCell.textContent = value;
+                    row.appendChild(keyCell);
+                    row.appendChild(valueCell);
+                    document.getElementById('reportTableBody').appendChild(row);
+                }
+                {#// 显示模态框#}
+                {#$('#reportModal').modal('show');#}
             })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+            .catch(error => console.error('There was a problem with the fetch operation:', error));
+
+        // 给查看报告按钮添加点击事件处理程序
+        viewReportButton.addEventListener('click', function () {
+            // 显示报告模态框
+            reportModal.style.display = 'block';
+        });
+
+        // 获取模态框中的关闭按钮
+        const closeButton = document.getElementById('closeButton');
+
+        // 给关闭按钮添加点击事件处理程序
+        closeButton.addEventListener('click', function () {
+            // 隐藏报告模态框
+            reportModal.style.display = 'none';
+        });
     }
 
     // Function to show report modal
@@ -286,23 +338,6 @@
     {% endfor %}
 </script>
 
-{#<!-- Report Modal -->#}
-<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">报告</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Report content will be displayed here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 
 </html>

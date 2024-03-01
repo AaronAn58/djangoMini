@@ -1,5 +1,7 @@
+import json
 import multiprocessing
 import os
+import ast
 from pathlib import Path
 from collections import Counter
 
@@ -134,4 +136,11 @@ def check_report(request, video_id):
 
 
 def show_report(request, video_id):
-    return JsonResponse({'msg': 'success'})
+    # 根据 video_id 查询对应的视频
+    video = get_object_or_404(Video, id=int(video_id))
+
+    # 根据视频查询报告
+    report = Report.objects.filter(video=video).first().report
+    report = json.loads(json.dumps(report))
+
+    return JsonResponse({'report': ast.literal_eval(report)})
