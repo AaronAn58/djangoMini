@@ -140,7 +140,10 @@ def show_report(request, video_id):
     video = get_object_or_404(Video, id=int(video_id))
 
     # 根据视频查询报告
-    report = Report.objects.filter(video=video).first().report
-    report = json.loads(json.dumps(report))
+    report_obj = Report.objects.filter(video=video).first()
+    total = report_obj.total
+    report_result = json.loads(json.dumps(report_obj.report))
+    report_result = ast.literal_eval(report_result)
+    report_result["total"] = total
 
-    return JsonResponse({'report': ast.literal_eval(report)})
+    return JsonResponse({'report': report_result})

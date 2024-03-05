@@ -142,20 +142,20 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">报告</h5>
+                <h5 class="modal-title" id="exampleModalLabel">道路损坏报告</h5>
                 {#                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
                     <thead>
-                    <tr>
-                        <th>报告内容</th>
-                    </tr>
+{#                    <tr>#}
+{#                        <th>报告内容</th>#}
+{#                    </tr>#}
                     </thead>
                     <tbody id="reportTableBody">
                     </tbody>
                 </table>
-            </div>
+            </div
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="closeButton" data-bs-dismiss="modal">关闭</button>
             </div>
@@ -277,8 +277,8 @@
                 const headerRow = document.createElement('tr');
                 const headerKeyCell = document.createElement('th');
                 const headerValueCell = document.createElement('th');
-                headerKeyCell.textContent = 'Key';
-                headerValueCell.textContent = 'Value';
+                headerKeyCell.textContent = '损坏种类';
+                headerValueCell.textContent = '损坏数量';
                 headerRow.appendChild(headerKeyCell);
                 headerRow.appendChild(headerValueCell);
                 document.getElementById('reportTableBody').appendChild(headerRow);
