@@ -1,112 +1,299 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
-
-<head>
+<html>
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>首页 - 道路检测系统</title>
-    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f8f8;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .logo {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        p {
-            margin-bottom: 20px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .btn {
-            background-color: #007bff;
-            color: #fff;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="flex-center">
-        <div class="container">
-            <div>
-                <h1 class="logo"><a href="{% url 'users:index' %}">道路检测系统</a></h1>
-                {% if user.is_authenticated %}
-                    <p>你已登录，欢迎你：<a href="#">{{ user.username }}</a></p>
-                    <div class="btn-group">
-                        <a href="{% url 'logout' %}?next={{ request.path }}" class="btn">注销登录</a>
-                        <a href="{% url 'users:password_change_form' %}" class="btn">修改密码</a>
-                    </div>
-                {% else %}
-                    <p>你还没有登录，请</p>
-                    <!-- Login Form -->
-                    <form method="post" action="{% url 'users:login' %}">
-                        {% csrf_token %}
-                        <!-- Add input fields for username and password -->
-                        <div class="form-group">
-                            {{ form.username.label_tag }} {{ form.username }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password.label_tag }} {{ form.password }}
-                        </div>
-                        <button type="submit" class="btn">登录</button>
-                    </form>
-                    <div class="btn-group">
-                        <a href="{% url 'users:register' %}" class="btn">注册</a>
-                    </div>
-                {% endif %}
+    <title>首页</title>
+    <link rel="stylesheet" href="/static/css/semantic.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="/static/css/index.css" media="screen" title="no title" charset="utf-8">
+  </head>
+  <body>
+    <div class="ui red basic segment  topmenu">
+      <div class="ui borderless menu container" style="border:0;box-shadow:none;">
+          <div class="header item" style="margin-right:10px;">
+            <div class="ui image">
+              <img src="/static/images/index/logo.png" alt="" />
             </div>
-        </div>
-    </div>
-</body>
+          </div>
+          <div class="item" style="margin-right:10px;">
+            <a href="yolov8:video_list">视频分析</a>
+          </div>
+          <div class="item" style="margin-right:10px;">
+            <a href="#">设计日报</a>
+          </div>
+          <div class="item" style="margin-right:10px;">
+            <a href="#">不许无聊</a>
+          </div>
 
-</html>
+
+        <div class="right menu login">
+          <div class="item">
+            <a href="login"><div class="ui image">
+                <img src="/static/images/index/login.png" alt="" />
+            </div>
+            <p style="margin-right:10px;margin-top:6px;color:black;">登录</p>
+            </a>
+
+          </div>
+          <div class="item">
+            <a href="#">  <div class="ui image">
+                 <img src="/static/images/index/register.png" alt="" />
+              </div>
+              <p style="color:black;">注册</p>
+            </a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ui basic segment body container">
+      <div class="ui basic segment container topcontent" style="border:none">
+        <div class="ui horizontal basic segments" style="border:none;">
+          <div class="ui basic segment topleft" style="background: url('/static/images/index/coverimg.jpg');background-size:cover;background-repeat: no-repeat;" >
+            <a href="#" class="ui circular red  button" style="width:80px;height:35px;padding:0px;padding-top:10px;">今日热闻</a>
+            <div class="ui basic segment title">
+                 <p style="color:#fff;font-size:28px;margin-left:8px;">日本人的日常与我们有什么不同？</p>
+            </div>
+          </div>
+          <div class="ui basic segment topright" >
+                <div class="ui  segment" style="border:solid red 1px;">
+                  <p>
+                    日本人的日常与我们有什么不同？
+                  </p>
+                  <span style="color:rgb(195, 200, 194)">3小时前</span>
+                </div>
+                <div class="ui segment">
+                  <p>
+                    怎样增加深度睡眠时间？
+                  </p>
+                  <span style="color:rgb(195, 200, 194)">3小时前</span>
+                </div>
+                <div class="ui  segment">
+                  <p>
+                    热门Top5：年度最大收购案诞生
+                  </p>
+                  <span style="color:rgb(195, 200, 194)">3小时前</span>
+                </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ui  grid container">
+        <div class="four wide column">
+         <div class="ui basic segment" style="background:url('/static/images/index/img1.jpg');background-size: cover;
+         background-repeat: no-repeat;">
+           <div class="ui basic segment title">
+                <p style="color:#fff;font-size:18px;margin-left:0px;">要接多少案子，才能成为一名专项律师</p>
+           </div>
+         </div>
+        </div>
+        <div class="four wide column">
+          <div class="ui basic segment" style="background:url('/static/images/index/img2.jpg');background-size: cover;
+          background-repeat: no-repeat;">
+           <div class="ui basic segment title">
+                <p style="color:#fff;font-size:18px;margin-left:0px;">面试官问你的缺点是什么，应该如何回答？</p>
+           </div>
+          </div>
+        </div>
+        <div class="four wide column">
+          <div class="ui basic segment" style="background:url('/static/images/index/img3.jpg');background-size: cover;
+          background-repeat: no-repeat;">
+           <div class="ui basic segment title">
+                <p style="color:#fff;font-size:18px;margin-left:0px;">小事，必须结婚，不结不行</p>
+           </div>
+          </div>
+        </div>
+        <div class="four wide column">
+          <div class="ui basic segment" style="background:url('/static/images/index/img4.jpg');background-size: cover;
+          background-repeat: no-repeat;">
+           <div class="ui basic segment title">
+                <p style="color:#fff;font-size:18px;margin-left:0px;">知乎好问题，你们都自创过什么好吃的菜品？</p>
+           </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ui horizontal basic segments bottomcontent">
+        <div class="ui segment bottomleft" style="border:none;box-shadow:none;">
+          <div class="ui segment article" style="border:none;box-shadow:none;">
+            <div class="ui image">
+              <img src="/static/images/index/articleimg1.jpg" alt="" />
+            </div>
+            <div class="ui segment articlecontent" style="border:none;box-shadow:none;">
+              <h3><b>大家都各有所长，但要一起做事才效率高</b></h3>
+              <p>
+                最优效率的生产，应该先让最适合生产这个东西的人去生产，但是随着你想生产的更多，只好让那些最不适合的也上了。
+              </p>
+              <span style="color:rgb(206, 208, 204);position:absolute;transform:translate(0,100%);bottom:10%">32分钟前</span>
+            </div>
+          </div>
+          <div class="ui segment article" style="border:none;box-shadow:none;">
+            <div class="ui image">
+              <img src="/static/images/index/articleimg2.jpg" alt="" />
+            </div>
+            <div class="ui segment articlecontent" style="border:none;box-shadow:none;">
+              <h3><b>2016年最引人注目的包装设计，都能说明哪些消费趋势？</b></h3>
+              <p>
+                在这个颜值当道的时代，即使是你对自己的产品本身有着绝对自信，还是花点心思为它乔装打扮一番吧。
+              </p>
+              <span style="color:rgb(206, 208, 204);position:absolute;transform:translate(0,100%);bottom:10%">32分钟前</span>
+            </div>
+          </div>
+          <div class="ui segment article" style="border:none;box-shadow:none;">
+            <div class="ui image">
+              <img src="/static/images/index/articleimg3.jpg" alt="" />
+            </div>
+            <div class="ui segment articlecontent" style="border:none;box-shadow:none;">
+              <h3><b>四年前卡梅隆在中国开了家公司，但如今还是默默无闻</b></h3>
+              <p>
+                电影技术公司在中国一向不受重视，哪怕创始人拍出过《阿凡达》。
+              </p>
+              <span style="color:rgb(206, 208, 204);position:absolute;transform:translate(0,100%);bottom:10%">32分钟前</span>
+            </div>
+          </div>
+          <div class="ui segment article" style="border:none;box-shadow:none;">
+            <div class="ui image">
+              <img src="/static/images/index/articleimg4.jpg" alt="" />
+            </div>
+            <div class="ui segment articlecontent" style="border:none;box-shadow:none;">
+              <h3><b>大公司头条：智能手表销量三季度跌了一半</b></h3>
+              <p>
+                我们每天早上为你摘取最重要的商业新闻，一切可能改变我们生活的公司都在其列。
+              </p>
+              <span style="color:rgb(206, 208, 204);position:absolute;transform:translate(0,100%);bottom:10%">32分钟前</span>
+            </div>
+          </div>
+          <div class="ui segment article" style="border:none;box-shadow:none;">
+            <div class="ui image">
+              <img src="/static/images/index/articleimg5.jpg" alt="" />
+            </div>
+            <div class="ui segment articlecontent" style="border:none;box-shadow:none;">
+              <h3><b>既不缺钱又不缺人，为何你的直播系统还是做砸了</b></h3>
+              <p>
+                我来给大家讲个故事。
+              </p>
+              <span style="color:rgb(206, 208, 204);position:absolute;transform:translate(0,100%);bottom:10%">32分钟前</span>
+            </div>
+          </div>
+          <button type="button" name="button" class="ui inverted  red huge button" style="width:200px;height:40px;margin-left:300px;margin-top:30px;padding-top:8px;">浏览更多</button>
+        </div>
+        <div class="ui segment bottomright" style="border:none;box-shadow:none;">
+          <div class="ui red segment best">
+            <h4 class="ui center aligned header"><b>编辑推荐</b></h4>
+            <div class="ui segment top3" style="background:url('/static/images/index/sideimg1.jpg');
+            background-size:cover;background-repeat:no-repeat;border-radius:0;">
+             <div class="sidebutton">
+               <img src="/static/images/index/redtag.png" alt="" />
+               <p>Top1</p>
+             </div>
+             <div class="ui basic segment title" style="height:40px;padding-top:2px;">
+                  <p style="color:#fff;font-size:14px;margin-left:0px;">卖公司这事还是有很多学问的，Twitter怎么就尴尬了？</p>
+             </div>
+            </div>
+            <div class="ui segment top3" style="background:url('/static/images/index/sideimg2.jpg');
+            background-size:cover;background-repeat:no-repeat;border-radius:0;">
+             <div class="sidebutton">
+               <img src="/static/images/index/yellowtag.png" alt="" />
+               <p>Top1</p>
+             </div>
+             <div class="ui basic segment title" style="height:40px;padding-top:2px;">
+                  <p style="color:#fff;font-size:14px;margin-left:0px;">硅谷收益最高的风投说，钱太多是这个市场最大的问题</p>
+             </div>
+            </div>
+            <div class="ui segment top3" style="background:url('images/index/sideimg3.jpg');
+            background-size:cover;background-repeat:no-repeat;border-radius:0;">
+             <div class="sidebutton">
+               <img src="/static/images/index/bluetag.png" alt="" />
+               <p>Top1</p>
+             </div>
+             <div class="ui basic segment title" style="height:40px;padding-top:2px;">
+                  <p style="color:#fff;font-size:14px;margin-left:0px;">看起来不起眼的日常设备，可能是未来网络攻击的对象</p>
+             </div>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+               这部别出心裁的漫画，讲的是阿富汗战争时期不为人知的历史
+              </p>
+             <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                华纳兄弟将拍摄的新片，讲述的是亚洲富豪的故事
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                美国各大银行纷纷关闭分行，说要向数字化转型
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                在医院看病也用微信支付，腾讯这回可能想多了
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                马化腾说，微信最早就是个邮箱s
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                拿了这笔钱后，全球最红新媒体之一BuzzFeed值17亿美元了
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui segment bestlast">
+              <img src="/static/images/index/Triangle.png" alt="" />
+              <p>
+                意想不到的童年回忆杀，《蜡笔小新》最新剧场版来了内地
+              </p>
+              <span>3分钟前</span>
+            </div>
+            <div class="ui image">
+              <img src="/static/images/index/ad.png" alt="" style="width:300px;"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div class="ui basic segment bottomblack">
+    <div class="ui image">
+      <img src="/static/images/index/white_zhiribao.png" alt="" />
+    </div>
+    <p style="color:red;margin-top:50px;font-size:20px;">
+      关于我们<span style="color:rgb(143, 143, 143)">｜</span>加入我们<span style="color:rgb(143, 143, 143)">｜</span>联系我们｜寻求报道
+    </p>
+    <p style="color:white;font-size:20px;">
+      反馈建议:<span style="color:red;">124608760@qq.com</span>
+    </p>
+    <div class="ui  basic segment wechat">
+      <img src="/static/images/index/qrcode.png" style="margin-left:38px;"/>
+      <h2 class="ui header" style="color:rgb(255, 255, 255);margin-left:20px;">扫码关注微信号</h2>
+    </div>
+    <button type="button" name="button" class="ui circular red button backtotop">
+      <img src="/static/images/index/upicon.png" style="position:absolute;left:18%;top:10%;">
+      <img src="/static/images/index/TOP.png" style="position:absolute;left:18%;bottom:28%;">
+    </button>
+  </div>
+  <div class="ui basic segment bottomwhite">
+    <p>
+      Designed by Mugglecoding
+    </p>
+    <p>
+      Developed by XYX
+    </p>
+    <p style="position:absolute;right:250px;top:40px;">
+      京ICP备123878345号
+    </p>
+  </div>
+  </body>
 </html>

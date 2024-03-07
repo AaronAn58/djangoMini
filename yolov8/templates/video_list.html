@@ -14,6 +14,89 @@
             color: #333;
             margin: 0;
             padding: 0;
+        {#text-align: center;#}
+        }
+
+        #user-info-button p,
+        #user-info-button button {
+            display: inline;
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px; /* Adjust as needed */
+            right: 20px; /* Adjust as needed */
+        }
+
+
+        .update-info {
+            display: none;
+            width: 100%;
+            height: 100%;
+            /* 默认隐藏 */
+            /* display: none; */
+            /* 固定定位 */
+            position: fixed;
+            /* 设置在顶层 */
+            z-index: 1000;
+            /* 设置位置 */
+            left: 0;
+            top: 0;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .update-info-content {
+            position: relative;
+            background-color: #fff;
+            margin: 50px auto;
+            border: 1px solid #888;
+            width: 1000px;
+            height: 580px;
+            z-index: 1001;
+        }
+
+        .update-info-content label {
+            display: block;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .update-info-body {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            align-items: center; /* 将项目水平居中对齐 */
+        }
+
+        .update-info-body input {
+            width: 100%; /* Make input fields take full width */
+            padding: 8px; /* Add padding for better appearance */
+            margin-bottom: 5px; /* Add some bottom margin for spacing */
+            box-sizing: border-box; /* Include padding and border in the width */
+        }
+
+        .update-info-body button {
+            text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 关闭按钮 */
+        #close {
+            position: absolute;
+            right: 20px;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .container {
@@ -90,6 +173,8 @@
         .video-list-table td a:hover {
             text-decoration: underline;
         }
+
+
     </style>
 </head>
 
@@ -109,6 +194,13 @@
         </div>
     </form>
 
+    <!-- User information button -->
+    <div class="user-info" id="user-info-button">
+        <p>当前登录用户：</p>
+        <button id="userInfoButton" class="btn btn-primary"
+                onclick="showUpdateUser({{ user.id }})">{{ user.username }}</button>
+    </div>
+
     <table class="video-list-table mobi-table mobi-table-bordered">
         <thead>
         <tr>
@@ -126,9 +218,12 @@
                     <button type="button" class="analyze-button"
                             onclick="analyzeVideo('{{ video.file.url }}', '{{ video.id }}')">视频分析
                     </button>
-                    <button type="button" class="delete-button" onclick="deleteVideo('{{ video.id }}')">删除</button>
+                    <button type="button" class="delete-button" onclick="deleteVideo('{{ video.id }}')">删除视频</button>
                     <button type="button" class="report-button" id="reportButton{{ video.id }}" style="display: none"
                             onclick="showReport('{{ video.id }}')">查看报告
+                    </button>
+                    <button type="button" class="download-button" id="downloadButton{{ video.id }}" style="display: none"
+                            onclick="downloadReport('{{ video.id }}')">下载报告
                     </button>
                 </td>
             </tr>
@@ -143,19 +238,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">道路损坏报告</h5>
-                {#                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
                     <thead>
-{#                    <tr>#}
-{#                        <th>报告内容</th>#}
-{#                    </tr>#}
                     </thead>
                     <tbody id="reportTableBody">
                     </tbody>
                 </table>
-            </div
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="closeButton" data-bs-dismiss="modal">关闭</button>
             </div>
@@ -163,7 +254,42 @@
     </div>
 </div>
 
+<div class="update-info" id="updateUserInfoModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="update-info-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel" align="center">修改登录信息</h5>
+            </div>
+            <div class="update-info-body">
+                <form method="post" action="{% url 'users:update_info' %}">
+                    {% csrf_token %}
+                    <label for="id_username">用户名:</label>
+                    {{ register_form.username }}
 
+                    <label for="id_email">邮箱:</label>
+                    {{ register_form.email }}
+
+                    <label for="id_age">年龄:</label>
+                    {{ register_form.age }}
+
+                    <label for="id_address">地址:</label>
+                    {{ register_form.address }}
+
+                    <label for="id_phone">电话号码:</label>
+                    {{ register_form.phone }}
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeUserDetail()">
+                        关闭
+                    </button>
+
+                    <button type="submit">保存修改</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
     // Function to handle video analysis
     function analyzeVideo(videoUrl, videoId) {
@@ -218,6 +344,7 @@
                 if (data.has_report) {
                     // Show the report button
                     document.getElementById('reportButton' + videoId).style.display = 'block';
+                    document.getElementById('downloadButton' + videoId).style.display = 'block';
                 }
             })
             .catch(error => {
@@ -314,6 +441,52 @@
             // 隐藏报告模态框
             reportModal.style.display = 'none';
         });
+    }
+
+    function downloadReport(videoId) {
+        // 创建一个 XMLHttpRequest 对象
+        const xhr = new XMLHttpRequest();
+
+        // 设置请求的类型、URL 以及是否异步处理请求
+        xhr.open('GET', `/videos/download_report/${videoId}`, true);
+
+        // 设置响应类型
+        xhr.responseType = 'blob';
+
+        // 定义当请求完成时要执行的函数
+        xhr.onload = function() {
+            // 检查请求是否成功完成
+            if (xhr.status === 200) {
+                // 创建一个 Blob 对象
+                const blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                // 创建一个临时 URL，指向 Blob 对象
+                const url = window.URL.createObjectURL(blob);
+                // 创建一个 <a> 元素
+                const a = document.createElement('a');
+                // 设置下载属性
+                a.href = url;
+                a.download = `report_${videoId}.xlsx`;
+                // 触发点击事件来开始下载
+                a.click();
+                // 释放 Blob 对象
+                window.URL.revokeObjectURL(url);
+            }
+        };
+
+        // 发送请求
+        xhr.send();
+    }
+
+    function showUpdateUser(userId) {
+        document.getElementById("updateUserInfoModal").style.display = 'block';
+    }
+
+    function closeUserDetail() {
+        document.getElementById("updateUserInfoModal").style.display = 'none';
+    }
+
+    function updateUserInfo() {
+
     }
 
     // Function to show report modal

@@ -1,8 +1,10 @@
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from .forms import RegistrationForm
+from yolov8.models import Report
+from .forms import RegistrationForm, UpdateUserInfoForm
 
 
 def register(request):
@@ -35,8 +37,25 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('yolov8:video_list')  # Redirect to the desired URL after successful login
+            if user.is_superuser:
+                return redirect('users:user_admin')
+            else:
+                return redirect('yolov8:video_list')  # Redirect to the desired URL after successful login
     else:
         form = AuthenticationForm()
 
     return render(request, 'login/login.html', {'form': form})
+
+
+def update_user_info(request):
+    if request.method == 'POST':
+        form = UpdateUserInfoForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('yolov8:video_list')
+    return redirect('yolov8:video_list')
+
+
+def user_admin(request):
+    report_obj = Report.objects.all()
+    return render(request, 'user_admin.html', {'reports': report_obj})

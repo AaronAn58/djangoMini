@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>管理员</title>
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+    <style>
+        body {
+            background-image: url('/static/images/2.jpg');
+            background-size: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .mobi-text-center {
+            text-align: center;
+        }
+
+        .upload-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .custom-file-upload,
+        .upload-button {
+            display: inline-block;
+            padding: 12px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .custom-file-upload {
+            background-color: #007bff;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+        }
+
+        .upload-button {
+            background-color: #007bff;
+        }
+
+        .upload-button:hover {
+            background-color: #0056b3;
+        }
+
+        .video-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .video-list-table th,
+        .video-list-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .video-list-table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .video-list-table td a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .video-list-table td a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2 class="mobi-text-center">视频列表</h2>
+
+    <table class="video-list-table mobi-table mobi-table-bordered">
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>检测用户</th>
+            <th>检测时间</th>
+            <th>检测报告</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for report in reports %}
+            <tr>
+                <td>{{ report.id }}</td>
+                <td>{{ report.user.username }}</td>
+                <td>{{ report.created_at }}</td>
+                <td><a href="{% url 'yolov8:download_report' report.video.id %}">{{ report.file_name }}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+</script>
+
+</body>
+
+</html>

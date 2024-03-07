@@ -15,6 +15,8 @@ class Report(models.Model):
     total = models.IntegerField(null=False, default=0, blank=False)
     report = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, default=1)
+    file_name = models.CharField(null=False, default="abc.xlsx", max_length=50)
 
     class Meta:
         ordering = ['created_at']

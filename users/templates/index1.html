@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>首页 - 道路检测系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .logo {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-center">
+        <div class="container">
+            <div>
+                <h1 class="logo"><a href="{% url 'users:index' %}">道路检测系统</a></h1>
+                {% if user.is_authenticated %}
+                    <p>你已登录，欢迎你：<a href="#">{{ user.username }}</a></p>
+                    <div class="btn-group">
+                        <a href="{% url 'logout' %}?next={{ request.path }}" class="btn">注销登录</a>
+                        <a href="{% url 'users:password_change_form' %}" class="btn">修改密码</a>
+                    </div>
+                {% else %}
+                    <p>你还没有登录，请</p>
+                    <!-- Login Form -->
+                    <form method="post" action="{% url 'users:login' %}">
+                        {% csrf_token %}
+                        <!-- Add input fields for username and password -->
+                        <div class="form-group">
+                            {{ form.username.label_tag }} {{ form.username }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password.label_tag }} {{ form.password }}
+                        </div>
+                        <button type="submit" class="btn">登录</button>
+                    </form>
+                    <div class="btn-group">
+                        <a href="{% url 'users:register' %}" class="btn">注册</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+</html>
